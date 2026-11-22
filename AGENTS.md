@@ -90,4 +90,5 @@ npm run preview
 
 | Date | Area | Status | Notes |
 |---|---|---|---|
+| 2026-11-22 | Patient documents panel | DONE | New `DocumentsPanel.vue` (list with category filter + name search, upload with category, token-authenticated download, archive, permission-gated by `documents.view` / `documents.upload` / `documents.delete`, loading/empty/no-access states) mounted on the patient summary, as an encounter workspace tab, and beside the inspected order. Added `apiDownload()` to `src/lib/api.ts` (bearer token + `Content-Disposition` filename, `ApiError` on failure), `src/types/document.ts`, and `row-actions` / `break-all` utilities in `style.css`. `vue-tsc` + `vite build` pass; `DocumentsPanel` ships as its own 5.8 kB chunk. | — |
 | 2026-11-21 | Repository split | DONE | Extracted from the legacy monorepo into its own repo; API base URL now env-driven with a dev proxy; template leftovers removed; docs written |

@@ -111,6 +111,16 @@ body {
   text-transform: capitalize;
 }
 
+.break-all {
+  word-break: break-all;
+}
+
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
 .desktop-only {
   display: none;
 }

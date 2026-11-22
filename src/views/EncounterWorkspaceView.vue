@@ -2,6 +2,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import AppLayout from '../components/AppLayout.vue'
+import DocumentsPanel from '../components/DocumentsPanel.vue'
 import { apiRequest, ApiError } from '../lib/api'
 import { useAuthStore } from '../stores/auth'
 import type { Encounter, FormDefinition } from '../types/encounter'
@@ -11,7 +12,7 @@ const auth = useAuthStore()
 
 const encounter = ref<Encounter | null>(null)
 const formDefinitions = ref<FormDefinition[]>([])
-const activeTab = ref<'vitals' | 'notes' | 'forms'>('vitals')
+const activeTab = ref<'vitals' | 'notes' | 'forms' | 'documents'>('vitals')
 const loading = ref(false)
 const error = ref('')
 const saving = ref(false)
@@ -259,6 +260,14 @@ onMounted(fetchEncounter)
         >
           Clinical Forms / LBF ({{ encounter.forms?.length ?? 0 }})
         </button>
+        <button
+          type="button"
+          class="tab-btn"
+          :class="{ active: activeTab === 'documents' }"
+          @click="activeTab = 'documents'"
+        >
+          Documents
+        </button>
       </div>
 
       <!-- Vitals Tab -->
@@ -451,6 +460,12 @@ onMounted(fetchEncounter)
           </article>
         </div>
       </section>
+
+      <DocumentsPanel
+        v-if="activeTab === 'documents'"
+        owner-type="encounter"
+        :owner-id="encounter.id"
+      />
     </template>
   </AppLayout>
 </template>

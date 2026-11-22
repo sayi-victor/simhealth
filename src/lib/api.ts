@@ -75,3 +75,61 @@ export async function apiRequest<T>(
 
   return body as T
 }
+
+/**
+ * Fetch a file from the API with the bearer token, then hand it to the browser
+ * as a download. Needed because `<a href>` cannot send an Authorization header
+ * and the API never serves documents from a public disk.
+ *
+ * Accepts either an API path (`/documents/12/download`) or an absolute URL.
+ */
+export async function apiDownload(pathOrUrl: string, fallbackName = 'download'): Promise<void> {
+  const token = getAuthToken()
+  const headers = new Headers({ Accept: '*/*' })
+
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`)
+  }
+
+  const url = /^https?:\/\//i.test(pathOrUrl) ? pathOrUrl : `${API_URL}${pathOrUrl}`
+  const response = await fetch(url, { headers })
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => null)
+    const errPayload: ApiErrorPayload = body?.error ?? {
+      code: 'HTTP_ERROR',
+      message: `Download failed with status ${response.status}`,
+      details: null,
+    }
+    throw new ApiError(response.status, errPayload)
+  }
+
+  const blob = await response.blob()
+  const filename = filenameFromDisposition(response.headers.get('Content-Disposition')) ?? fallbackName
+
+  const objectUrl = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = objectUrl
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(objectUrl)
+}
+
+function filenameFromDisposition(disposition: string | null): string | null {
+  if (!disposition) return null
+
+  const encoded = /filename\*=UTF-8''([^;]+)/i.exec(disposition)
+  if (encoded?.[1]) {
+    try {
+      return decodeURIComponent(encoded[1].trim())
+    } catch {
+      return encoded[1].trim()
+    }
+  }
+
+  const plain = /filename="?([^";]+)"?/i.exec(disposition)
+  return plain?.[1]?.trim() || null
+}
+

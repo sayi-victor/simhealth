@@ -2,6 +2,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppLayout from '../components/AppLayout.vue'
+import DocumentsPanel from '../components/DocumentsPanel.vue'
 import { apiRequest, ApiError } from '../lib/api'
 import { useAuthStore } from '../stores/auth'
 import type { PatientDetail } from '../types/patient'
@@ -242,6 +243,8 @@ onMounted(fetchPatient)
           </tbody>
         </table>
       </section>
+
+      <DocumentsPanel owner-type="patient" :owner-id="patient.id" />
     </template>
   </AppLayout>
 </template>

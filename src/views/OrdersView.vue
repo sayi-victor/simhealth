@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import AppLayout from '../components/AppLayout.vue'
+import DocumentsPanel from '../components/DocumentsPanel.vue'
 import { apiRequest, ApiError } from '../lib/api'
 import { useAuthStore } from '../stores/auth'
 import type { ClinicalOrder, OrderCatalogItem } from '../types/order'
@@ -420,5 +421,11 @@ onMounted(async () => {
         </tbody>
       </table>
     </section>
+
+    <DocumentsPanel
+      v-if="selectedOrder"
+      owner-type="order"
+      :owner-id="selectedOrder.id"
+    />
   </AppLayout>
 </template>
